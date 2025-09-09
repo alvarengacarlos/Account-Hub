@@ -1,0 +1,25 @@
+entryPoints:
+  web:
+    address: :80/tcp
+    http:
+      redirections:
+        entryPoint:
+          to: web_secure
+          scheme: https
+          permanent: true
+  web_secure:
+    address: :443/tcp
+    http:
+      tls: true
+
+providers:
+  file:
+    filename: /etc/traefik/traefik-dynamic.yml
+    watch: true
+
+api:
+  dashboard: true
+  insecure: false
+
+log:
+  level: INFO

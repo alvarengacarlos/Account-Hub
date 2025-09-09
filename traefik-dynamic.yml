@@ -1,0 +1,61 @@
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /tls/public.crt
+        keyFile: /tls/pk.pem
+
+http:
+  routers:
+    traefik-dashboard-router:
+      rule: PathPrefix(`/`)
+      service: api@internal
+      middlewares:
+        - auth
+      entryPoints:
+        - web
+        - web_secure
+    doc-router:
+      rule: PathPrefix(`/doc-service`)
+      service: doc-service
+      entryPoints:
+        - web
+        - web_secure
+    account-router:
+      rule: PathPrefix(`/account-service`)
+      service: account-service
+      middlewares:
+        - remove-path-prefix
+      entryPoints:
+        - web
+        - web_secure
+    jenkins-router:
+      rule: PathPrefix(`/jenkins-service`)
+      service: jenkins-service
+      entryPoints:
+        - web
+        - web_secure
+
+  middlewares:
+    auth:
+      basicAuth:
+        users:
+          - admin:$2y$05$7xw1uE4MWXEqe0gjcsWEBeAaVpKszuBkFo9/TRFX4jTsq6n/0A9La
+    remove-path-prefix:
+      stripPrefix:
+        prefixes:
+          - /account-service
+
+  services:
+    doc-service:
+      loadBalancer:
+        servers:
+          - url: http://doc:80
+    account-service:
+      loadBalancer:
+        servers:
+          - url: http://account:8080
+    jenkins-service:
+      loadBalancer:
+        servers:
+          - url: http://jenkins:8080
