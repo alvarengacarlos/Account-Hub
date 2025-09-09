@@ -1,0 +1,85 @@
+volumes:
+  postgresql_vol:
+  registry:
+  jenkins_vol:
+
+networks:
+  public_net:
+  private_net:
+
+services:
+  api_gateway:
+    image: traefik:v3.4
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - public_net
+      - private_net
+    volumes:
+      - ./traefik-static.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik-dynamic.yml:/etc/traefik/traefik-dynamic.yml:ro
+      - ./tls/:/tls/:ro
+
+  registry:
+    image: registry:2
+    volumes:
+      - registry:/var/lib/registry
+      - ./tls/:/tls/:ro
+    environment:
+      - REGISTRY_HTTP_TLS_CERTIFICATE=/tls/public.crt
+      - REGISTRY_HTTP_TLS_KEY=/tls/pk.pem
+    networks:
+      - private_net
+  
+  dind:
+    image: docker:dind
+    privileged: true
+    volumes:
+      - jenkins_vol:/var/jenkins_home
+    environment:
+      - DOCKER_TLS_CERTDIR=/certs
+    networks:
+      - private_net
+    command: ["--storage-driver", "overlay2"]
+
+  jenkins:
+    build:
+      context: ./
+      dockerfile: Dockerfile.jenkins
+    volumes:
+      - jenkins_vol:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_HOST=tcp://dind:2375
+      - JENKINS_OPTS=--prefix=/jenkins-service
+    networks:
+      - private_net
+  
+  postgresql:
+    image: postgres:17.4
+    volumes:
+      - postgresql_vol:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=pg
+      - POSTGRES_PASSWORD=pgpw
+      - POSTGRES_DB=account_hub_db
+    networks:
+      - private_net
+  
+  flyway:
+    image: redgate/flyway
+    volumes:
+      - ./account-service/migrations/:/flyway/sql/account-service/:ro
+    networks:
+      - private_net
+
+  account:
+    image: registry:5000/account-service:v1.0.0
+    networks:
+      - private_net
+  
+  doc:
+    image: registry:5000/doc-service:v1.0.0
+    networks:
+      - private_net

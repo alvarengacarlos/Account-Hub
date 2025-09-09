@@ -1,0 +1,22 @@
+FROM python:slim AS build
+
+WORKDIR /app
+
+RUN pip install mkdocs mkdocs-kroki-plugin
+
+COPY doc-service/mkdocs.yml .
+COPY doc-service/docs docs/
+
+RUN mkdocs build --site-dir site/doc-service
+
+
+FROM httpd:latest
+
+WORKDIR /usr/local/apache2/htdocs/
+
+RUN apt update
+RUN apt upgrade -y
+
+COPY --from=build /app/site .
+
+EXPOSE 80/tcp
