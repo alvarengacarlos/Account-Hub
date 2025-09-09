@@ -5,7 +5,11 @@ volumes:
 
 networks:
   public_net:
+    name: public_net
+    external: true
   private_net:
+    name: private_net
+    external: true
 
 services:
   api_gateway:
@@ -23,6 +27,8 @@ services:
 
   registry:
     image: registry:2
+    ports:
+      - 5000:5000
     volumes:
       - registry:/var/lib/registry
       - ./tls/:/tls/:ro
@@ -37,10 +43,13 @@ services:
     privileged: true
     volumes:
       - jenkins_vol:/var/jenkins_home
+      - jenkins_vol:/certs/client
     environment:
       - DOCKER_TLS_CERTDIR=/certs
     networks:
-      - private_net
+      private_net:
+        aliases:
+          - docker
     command: ["--storage-driver", "overlay2"]
 
   jenkins:
@@ -49,12 +58,17 @@ services:
       dockerfile: Dockerfile.jenkins
     volumes:
       - jenkins_vol:/var/jenkins_home
+      - jenkins_vol:/certs/client:ro
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - DOCKER_HOST=tcp://dind:2375
+      - DOCKER_HOST=tcp://docker:2376
+      - DOCKER_CERT_PATH=/certs/client
+      - DOCKER_TLS_VERIFY=1
       - JENKINS_OPTS=--prefix=/jenkins-service
     networks:
       - private_net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   
   postgresql:
     image: postgres:17.4
@@ -75,11 +89,11 @@ services:
       - private_net
 
   account:
-    image: registry:5000/account-service:v1.0.0
+    image: localhost:5000/account-service:v1.0.0
     networks:
       - private_net
   
   doc:
-    image: registry:5000/doc-service:v1.0.0
+    image: localhost:5000/doc-service:v1.0.0
     networks:
       - private_net

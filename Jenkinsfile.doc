@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_VERSION = 'v1.0.0'
+    }
+
+    stages {
+        stage('Build') {
+            // Switch to host instead dind
+            environment {
+                DOCKER_HOST = 'unix:///var/run/docker.sock'
+            }
+
+            steps {
+                script {
+                    def imageTag = "doc-service:${IMAGE_VERSION}"
+
+                    sh """
+                    sudo docker image build --no-cache \
+                    --file Dockerfile.doc \
+                    --tag ${imageTag} .
+                    """
+                    sh "sudo docker image tag ${imageTag} localhost:5000/${imageTag}"
+                    sh "sudo docker image push localhost:5000/${imageTag}"
+                }
+            }
+        }
+
+        stage('Deploy') {
+            // Switch to host instead dind
+            environment {
+                DOCKER_HOST = 'unix:///var/run/docker.sock'
+            }
+
+            steps {
+                script {
+                    sh 'sudo docker compose down doc'
+                    sh 'sudo docker compose up doc -d'
+                }
+            }
+        }
+
+        stage('HealthCheck') {
+            steps {
+                sh 'sleep 10'
+                timeout(time: 20, unit: 'SECONDS') {
+                    sh """
+                    STATUS=\$(curl -X GET -s -o /dev/null -w "%{http_code}" http://doc:80/)
+                    if ["\$STATUS" -ne 200 ]; then
+                        echo "Health check failed with status \$STATUS"
+                        exit 1
+                    fi
+                    """
+                }
+            }
+        }
+    }
+}
