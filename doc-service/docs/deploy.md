@@ -37,6 +37,12 @@ htpasswd -B -n -b USER_NAME USER_PASSWORD
 
 Replace the value `admin:$5$3F.SO1Ukcrfn5CmJ$Us8ElLe3NQ/4tS4pcUEUa.oPFLlolhXtTPSIE4Ljl37` in the `traefik-dynamic.yml` file.
 
+Create the networks:
+```bash
+docker network create public_net && \
+docker network create private_net
+```
+
 Start `api_gateway`, `registry`, `dind`, `jenkins` and  `postgresql` services:
 ```bash
 docker compose up api_gateway registry dind jenkins postgresql -d
