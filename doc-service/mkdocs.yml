@@ -1,0 +1,11 @@
+site_name: Account Hub
+
+nav:
+  - Home: index.md
+  - Architecture: arch.md
+  - Deploy: deploy.md
+
+theme: readthedocs
+
+plugins:
+  - kroki:
