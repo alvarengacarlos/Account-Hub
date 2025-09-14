@@ -1,0 +1,53 @@
+networks:
+  public_net:
+    name: public_net
+    external: true
+  private_net:
+    name: private_net
+    external: true
+
+services:
+  # OP - OpenID Provider
+  api_gateway:
+    image: traefik:v3.4
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - public_net
+      - private_net
+    volumes:
+      - ./traefik-static.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik-dynamic.yml:/etc/traefik/traefik-dynamic.yml:ro
+      - ./tls/:/tls/:ro
+  
+  account:
+    build:
+      context: ./
+      dockerfile: Dockerfile.account
+    networks:
+      - private_net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  
+  account_web:
+    image: httpd:latest
+    volumes:
+      - ./account-web/:/usr/local/apache2/htdocs/:ro
+    networks:
+      - private_net
+  
+  doc:
+    build:
+      context: ./
+      dockerfile: Dockerfile.doc
+    networks:
+      - private_net
+
+  # RP - Relying Party
+  pizza:
+    image: httpd:latest
+    ports:
+      - 8080:80
+    volumes:
+      - ./pizza-web/:/usr/local/apache2/htdocs/:ro
