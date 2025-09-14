@@ -1,5 +1,4 @@
 volumes:
-  postgresql_vol:
   registry:
   jenkins_vol:
 
@@ -70,26 +69,17 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
   
-  postgresql:
-    image: postgres:17.4
-    volumes:
-      - postgresql_vol:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=pg
-      - POSTGRES_PASSWORD=pgpw
-      - POSTGRES_DB=account_hub_db
-    networks:
-      - private_net
-  
-  flyway:
-    image: redgate/flyway
-    volumes:
-      - ./account-service/migrations/:/flyway/sql/account-service/:ro
-    networks:
-      - private_net
-
   account:
     image: localhost:5000/account-service:v1.0.0
+    networks:
+      - private_net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  
+  account_web:
+    image: httpd:latest
+    volumes:
+      - ./account-web/:/usr/local/apache2/htdocs/:ro
     networks:
       - private_net
   
