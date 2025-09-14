@@ -1,29 +1,8 @@
 FROM amazoncorretto:21 AS build
 
-ARG DB_USER
-# TODO: How pass sensitive information
-ARG DB_PASSWORD
-ARG DB_NAME
-ARG DB_PORT
-ARG DB_HOST
-ARG DB_POOL_SIZE
-ARG JWT_SECRET
-
 WORKDIR /account-service
 
-COPY . .
-
-WORKDIR /account-service/app/src/main/resources
-
-RUN sed -i -e "s/^dataSource\\.user=.*/dataSource.user=$DB_USER/" hikari.properties
-RUN sed -i -e "s/^dataSource\\.password=.*/dataSource.password=$DB_PASSWORD/" hikari.properties
-RUN sed -i -e "s/^dataSource\\.databaseName=.*/dataSource.databaseName=$DB_NAME/" hikari.properties
-RUN sed -i -e "s/^dataSource\\.portNumber=.*/dataSource.portNumber=$DB_PORT/" hikari.properties
-RUN sed -i -e "s/^dataSource\\.serverName=.*/dataSource.serverName=$DB_HOST/" hikari.properties
-RUN sed -i -e "s/^maximumPoolSize=.*/maximumPoolSize=$DB_POOL_SIZE/" hikari.properties
-RUN sed -i -e "s/^jwt\\.secret=.*/jwt.secret=$JWT_SECRET/" application.properties
-
-WORKDIR /account-service
+COPY account-service .
 
 RUN ./gradlew bootJar
 

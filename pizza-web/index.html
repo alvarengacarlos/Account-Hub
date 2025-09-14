@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza - Login</title>
+</head>
+
+<body>
+    <h4>Sign in</h4>
+    <button id="btn">Continue with Account Hub</button>
+</body>
+
+</html>
+<script>
+    const params = new URLSearchParams({
+        response_type: "code",
+        scope: "openid profile email",
+        client_id: "a8fc6aeb9527978ba6b5",
+        //Redirect to me (pizza)
+        redirect_uri: "http://localhost:8080/callback.html",
+        state: "bd874507b9a0",
+        prompt: "login"
+    }).toString()
+
+    const btn = document.getElementById("btn")
+    btn.addEventListener("click", () => {
+        window.location.href = "https://localhost/account-service/authorize?".concat(params)
+    })
+</script>

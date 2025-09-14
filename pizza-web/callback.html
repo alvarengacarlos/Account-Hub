@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza - Callback</title>
+</head>
+
+<body>
+
+</body>
+
+</html>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code")
+    const state = params.get("state")
+
+    if (state === "bd874507b9a0") {
+        fetch("https://localhost/account-service/token", {
+            method: "POST",
+            mode: "cors",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({
+                grant_type: "authorization_code",
+                code: code,
+                client_id: "a8fc6aeb9527978ba6b5",
+                client_secret: "197e97fd6af444db975c54ae6c714f55",
+            })
+        })
+            .then(async (response) => {
+                if (response.status !== 200) {
+                    alert("Something goes wrong!")
+                    return
+                }
+
+                const bodyInJson = await response.json()
+                const params = new URLSearchParams(bodyInJson).toString()
+
+                window.location.href = "http://localhost:8080/my-account.html?".concat(params)
+            })
+    }
+</script>

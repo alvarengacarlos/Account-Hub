@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in to Account Hub</title>
+</head>
+
+<body>
+    <h4>Sing in to Account Hub</h4>
+    <form id="form">
+        <label for="email">Email:</label>
+        <input type="email" id="email" />
+        <label for="email">Password:</label>
+        <input type="password" id="password" />
+        <input type="submit" value="Send">
+    </form>
+</body>
+
+</html>
+
+<script>
+    const url = "https://localhost/account-service/login"
+
+    const form = document.getElementById("form")
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault()
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            mode: "cors",
+            body: JSON.stringify({
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value
+            })
+        })
+
+        if (response.status !== 200) {
+            alert("Invalid credentials")
+            return
+        }
+
+        //Redirect to pizza using application/x-www-form-urlencoded
+        const params = new URLSearchParams(window.location.search);
+        const redirectUri = params.get("redirect_uri")
+
+        const form = document.createElement("form")
+        form.method = "get"
+        form.action = redirectUri
+
+        const code = document.createElement("input")
+        code.type = "hidden"
+        code.name = "code"
+        code.value = params.get("code")
+        form.appendChild(code)
+
+        const state = document.createElement("input")
+        state.type = "hidden"
+        state.name = "state"
+        state.value = params.get("state")
+        form.appendChild(state)
+
+        document.body.appendChild(form)
+        form.submit()
+    })
+</script>

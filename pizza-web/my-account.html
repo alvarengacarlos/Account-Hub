@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza - My Account</title>
+</head>
+
+<body>
+    <h4>User token:</h4>
+</body>
+
+</html>
+<script>
+    const params = new URLSearchParams(window.location.search);
+
+    const tokenType = document.createElement("p")
+    tokenType.textContent = params.get("token_type")
+    document.body.appendChild(tokenType)
+
+    const idToken = document.createElement("p")
+    idToken.textContent = params.get("id_token")
+    document.body.appendChild(idToken)
+
+    const accessToken = document.createElement("p")
+    accessToken.textContent = params.get("access_token")
+    document.body.appendChild(accessToken)
+
+    const expiresIn = document.createElement("p")
+    expiresIn.textContent = params.get("expires_in")
+    document.body.appendChild(expiresIn)
+
+    const refreshToken = document.createElement("p")
+    refreshToken.textContent = params.get("refresh_token")
+    document.body.appendChild(refreshToken)
+</script>
