@@ -1,25 +1,23 @@
 # Account Hub
-## Description
-Account Hub aims to centralize your login into a single account, such as Google. It is for study purpose only.
 
 ## Documentation
 It was built with [MkDocs](https://www.mkdocs.org/) then it is a service.
 
-There are two ways to run the documentation service locally.
+There are two ways to run the doc service locally.
 
 ## By Docker
 ```bash
-cd documentation-service
+cd doc-service
 
-docker image build -f documentation-service/Dockerfile --no-cache -t documentation-service:latest .
+docker image build -f Dockerfile.doc --no-cache -t doc-service:latest .
 
-docker container run --rm -p 9000:80 documentation-service:latest
+docker container run --rm -p 8000:80 doc-service:latest
 ```
 
 ## By Python
 
 ```bash
-cd documentation-service
+cd doc-service
 
 python3 -v venv .venv
 
