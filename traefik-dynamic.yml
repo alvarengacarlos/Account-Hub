@@ -29,6 +29,14 @@ http:
       entryPoints:
         - web
         - web_secure
+    account-web-router:
+      rule: PathPrefix(`/account-web`)
+      service: account-web
+      middlewares:
+        - remove-path-prefix
+      entryPoints:
+        - web
+        - web_secure
     jenkins-router:
       rule: PathPrefix(`/jenkins-service`)
       service: jenkins-service
@@ -44,6 +52,7 @@ http:
     remove-path-prefix:
       stripPrefix:
         prefixes:
+          - /account-web
           - /account-service
 
   services:
@@ -51,6 +60,10 @@ http:
       loadBalancer:
         servers:
           - url: http://doc:80
+    account-web:
+      loadBalancer:
+        servers:
+          - url: http://account_web:80
     account-service:
       loadBalancer:
         servers:
