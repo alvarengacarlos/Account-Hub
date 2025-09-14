@@ -13,19 +13,19 @@ node VPS {
 
         cloud "Private network" {
             node Doc as doc
+            node "Account Web" as acc_web
             node Account as acc
-            node Postgresql as pg
             node Jenkins as j
             node Dind as d
             node Registry as r
         }
     }
 }
+ag -- acc_web
 ag -- acc
 ag -- doc
 ag -- j
 j -- d
 j -- r
-acc -- pg
 @enduml
 ```

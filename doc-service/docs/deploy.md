@@ -43,10 +43,12 @@ docker network create public_net && \
 docker network create private_net
 ```
 
-Start `api_gateway`, `registry`, `dind`, `jenkins` and  `postgresql` services:
+Start `api_gateway`, `registry`, `dind`, `jenkins` and `account_web` services:
 ```bash
-docker compose up api_gateway registry dind jenkins postgresql -d
+docker compose up api_gateway registry dind jenkins account_web -d
 ```
+
+> **Note**: If you want test you can up the pizza service with the command `docker compose up -f docker-compose-dev.yml pizza -d`
 
 ### Jenkins
 When Jenkins finalizes your installation it will generate a password for your `admin` user. You can access this password through this command:
@@ -59,13 +61,4 @@ With the `admin` password you can access Jenkins. It will be available on your `
 To finalize change the `admin` password.
 
 ## Pipelines
-Copy the `account-service/env-example.json` and rename the copy to `account-service/env.json`:
-```bash
-cp account-service/env-example.json account-service/env.json
-```
-
-Configure the `account-service/env.json`.
-
-On Jenkins create a new domain called `AccountHub` and inside this domain create a new `credential` with ID `ACCOUNT_SERVICE_ENV` and type `Secret file`. Upload the `account-env.json` in there.
-
-Finally create the `account service` pipeline with the name `account-pipeline` and the `doc service` pipeline with the name `doc-pipeline`, both of type `Pipeline`.
+Create the `account service` pipeline with the name `account-pipeline` and the `doc service` pipeline with the name `doc-pipeline`, both of type `Pipeline`.
