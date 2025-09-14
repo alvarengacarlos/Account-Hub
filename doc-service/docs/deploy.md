@@ -48,7 +48,7 @@ Start `api_gateway`, `registry`, `dind`, `jenkins` and `account_web` services:
 docker compose up api_gateway registry dind jenkins account_web -d
 ```
 
-> **Note**: If you want test you can up the pizza service with the command `docker compose up -f docker-compose-dev.yml pizza -d`
+> **Note**: If you want test you can up the pizza service with the command `docker compose -f docker-compose-dev.yml up pizza -d`
 
 ### Jenkins
 When Jenkins finalizes your installation it will generate a password for your `admin` user. You can access this password through this command:

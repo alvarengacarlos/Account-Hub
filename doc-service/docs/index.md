@@ -23,6 +23,12 @@ b -> e : 6. Do something
 ## Quick start - Dev Mode
 Follow the [X509 Certificates](./deploy.md#x509-certificates) section and back here.
 
+Create the networks:
+```bash
+docker network create public_net && \
+docker network create private_net
+```
+
 Start the services:
 ```bash
 docker compose -f docker-compose-dev.yml up -d
